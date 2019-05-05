@@ -2,4 +2,7 @@
     <string name="app_name">ToDoList</string>
     <string name="facebook_app_id">370409420235812</string>
     <string name="fb_login_protocol_scheme">fb370409420235812</string>
+    <string name="sair">Sair</string>
+    <string name="minhas_tarefas">Minhas Tarefas</string>
+    <string name="deseja_sair_mensagem">Tem certeza que deseja sair?</string>
 </resources>
