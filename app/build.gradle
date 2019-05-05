@@ -40,4 +40,7 @@ dependencies {
 
     //material dialog
     implementation 'com.afollestad.material-dialogs:core:2.8.1'
+
+    //gson
+    implementation 'com.google.code.gson:gson:2.8.5'
 }

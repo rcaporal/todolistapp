@@ -3,6 +3,7 @@ package com.example.todolist
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.todolist.data.TokenPreferences
 import com.facebook.AccessToken
 
 
@@ -12,7 +13,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        val accessToken = AccessToken.getCurrentAccessToken()
+        val accessToken: AccessToken? = TokenPreferences.getToken(this)
         checkAccessToken(accessToken)
 
     }
@@ -23,6 +24,7 @@ class SplashActivity : AppCompatActivity() {
         val intent = if (isLoggedIn) {
             Intent(this, MainActivity::class.java)
         } else {
+            TokenPreferences.clear(this)
             Intent(this, LoginActivity::class.java)
         }
 

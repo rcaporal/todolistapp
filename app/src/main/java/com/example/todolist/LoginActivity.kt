@@ -3,6 +3,7 @@ package com.example.todolist
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.todolist.data.TokenPreferences
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -41,6 +42,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun logIn(token: AccessToken) {
+        TokenPreferences.storeToken(this, token)
         val intent = Intent(this@LoginActivity, MainActivity::class.java)
         startActivity(intent)
         finish()

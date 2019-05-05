@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.afollestad.materialdialogs.MaterialDialog
+import com.example.todolist.data.TokenPreferences
 import com.facebook.AccessToken
 import com.facebook.AccessTokenTracker
 import com.facebook.login.LoginManager
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun logOut() {
+        TokenPreferences.clear(this)
         val intent = Intent(this@MainActivity, LoginActivity::class.java)
         startActivity(intent)
         finish()
