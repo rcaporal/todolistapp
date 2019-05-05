@@ -16,9 +16,10 @@
             android:textColor="#0E8073"
     />
 
-    <ProgressBar
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+    <com.facebook.login.widget.LoginButton
+            android:id="@+id/buttonLoginFacebook"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_margin="64dp"
     />
 
