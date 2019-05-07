@@ -1,7 +1,9 @@
 package com.example.todolist
 
 import android.content.Intent
+import android.graphics.Paint
 import android.os.Bundle
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.afollestad.materialdialogs.MaterialDialog
 import com.example.todolist.data.TokenPreferences
@@ -9,6 +11,7 @@ import com.facebook.AccessToken
 import com.facebook.AccessTokenTracker
 import com.facebook.login.LoginManager
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.item_task.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,6 +32,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        checkboxTask.setOnCheckedChangeListener { buttonView, isChecked ->
+            showStrikeThrough(textTask, isChecked)
+        }
+
     }
 
     private fun logOut() {
@@ -44,6 +51,14 @@ class MainActivity : AppCompatActivity() {
             message(R.string.deseja_sair_mensagem)
             positiveButton { LoginManager.getInstance().logOut() }
             negativeButton { }
+        }
+    }
+
+    private fun showStrikeThrough(textView: TextView, show: Boolean){
+        textView.paintFlags = if (show){
+            textView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+        } else {
+            textView.paintFlags  and Paint.STRIKE_THRU_TEXT_FLAG.inv()
         }
     }
 }

@@ -29,4 +29,14 @@
             android:textColor="#0E8073"
     />
 
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorBackground">
+
+        <include layout="@layout/item_task"/>
+
+    </LinearLayout>
+
 </LinearLayout>
