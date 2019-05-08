@@ -29,14 +29,21 @@
             android:textColor="#0E8073"
     />
 
-    <LinearLayout
-            android:orientation="vertical"
+    <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorBackground">
+            android:background="@color/colorBackground"
+    >
 
-        <include layout="@layout/item_task"/>
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerTasks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingBottom="50dp"
+        />
 
-    </LinearLayout>
+
+    </FrameLayout>
 
 </LinearLayout>

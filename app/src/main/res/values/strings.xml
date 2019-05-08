@@ -5,4 +5,6 @@
     <string name="sair">Sair</string>
     <string name="minhas_tarefas">Minhas Tarefas</string>
     <string name="deseja_sair_mensagem">Tem certeza que deseja sair?</string>
+    <string name="delete">Deletar</string>
+    <string name="delete_message">Deseja excluir essa tarefa?</string>
 </resources>
