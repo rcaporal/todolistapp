@@ -73,6 +73,12 @@ class TasksAdapter(activity: Activity,
         }
     }
 
+    fun addTask(taskText: String) {
+        val task = Task(taskText, false)
+        taskList.add(task)
+        notifyItemInserted(taskList.size - 1)
+    }
+
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val taskText: TextView = itemView.findViewById(R.id.textTask)
         val checkBox: CheckBox = itemView.findViewById(R.id.checkboxTask)

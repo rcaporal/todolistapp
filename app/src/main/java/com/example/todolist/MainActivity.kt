@@ -2,9 +2,12 @@ package com.example.todolist
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.input.getInputField
+import com.afollestad.materialdialogs.input.input
 import com.example.todolist.data.Task
 import com.example.todolist.data.TokenPreferences
 import com.facebook.AccessToken
@@ -17,15 +20,15 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var adapter: TasksAdapter
 
-    private val tasks = mutableListOf(
-        Task("Tarefa 1 ", false),
-        Task("Tarefa 2 ", true),
-        Task("Tarefa 3 ", false),
-        Task("Tarefa 4 ", true),
-        Task("Tarefa 5 ", false),
-        Task("Tarefa 6 ", true),
-        Task("Tarefa 7 ", false),
-        Task("Tarefa 8 ", true)
+    private val tasks = mutableListOf<Task>(
+//        Task("Tarefa 1 ", false),
+//        Task("Tarefa 2 ", true),
+//        Task("Tarefa 3 ", false),
+//        Task("Tarefa 4 ", true),
+//        Task("Tarefa 5 ", false),
+//        Task("Tarefa 6 ", true),
+//        Task("Tarefa 7 ", false),
+//        Task("Tarefa 8 ", true)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,14 +37,14 @@ class MainActivity : AppCompatActivity() {
 
         adapter = TasksAdapter(this,
             onCheckBoxClick = {position, isChecked ->
-                adapter.updateTask(position, isChecked)
+                updateTask(position, isChecked)
             },
             onDeleteClick = {position ->
                 MaterialDialog(this).show {
                     title(R.string.delete)
                     title(R.string.delete_message)
                     positiveButton {
-                        adapter.deleteTask(position)
+                        deleteTask(position)
                     }
                     negativeButton {  }
                 }
@@ -52,10 +55,24 @@ class MainActivity : AppCompatActivity() {
         manager.stackFromEnd = true
         recyclerTasks.layoutManager = manager
 
+        showHideEmptyTaskText()
+
         adapter.updateTaskList(tasks)
 
         buttonLogout.setOnClickListener {
             showLogoutMessage()
+        }
+
+        fabAddTask.setOnClickListener {
+            MaterialDialog(this).show {
+                title(R.string.add_task)
+                input()
+                positiveButton(R.string.add) {
+                    val text = getInputField().text.toString()
+                    addTask(text)
+                }
+                negativeButton {  }
+            }
         }
 
         val tokenListener = object : AccessTokenTracker() {
@@ -66,6 +83,25 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    private fun updateTask(position: Int, checked: Boolean) {
+        adapter.updateTask(position, checked)
+    }
+
+    private fun deleteTask(position: Int) {
+        adapter.deleteTask(position)
+        showHideEmptyTaskText()
+    }
+
+    private fun addTask(taskText: String){
+        adapter.addTask(taskText)
+        recyclerTasks.smoothScrollToPosition(tasks.size)
+        showHideEmptyTaskText()
+    }
+
+    private fun showHideEmptyTaskText(){
+        textNoTasks.visibility = if (adapter.itemCount > 0) View.GONE else View.VISIBLE
     }
 
     private fun logOut() {

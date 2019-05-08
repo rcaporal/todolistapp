@@ -41,6 +41,9 @@ dependencies {
     //material dialog
     implementation 'com.afollestad.material-dialogs:core:2.8.1'
 
+    //input
+    implementation 'com.afollestad.material-dialogs:input:3.0.0-alpha1'
+
     //gson
     implementation 'com.google.code.gson:gson:2.8.5'
 }

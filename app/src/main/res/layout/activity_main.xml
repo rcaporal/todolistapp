@@ -35,12 +35,32 @@
             android:background="@color/colorBackground"
     >
 
+        <TextView
+                android:id="@+id/textNoTasks"
+                android:visibility="invisible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_tasks"
+                android:layout_marginTop="32dp"
+                android:textSize="16sp"
+                android:layout_gravity="center_horizontal"
+        />
+
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerTasks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:paddingBottom="50dp"
+        />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabAddTask"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="16dp"
+                android:src="@drawable/ic_add"
         />
 
 
