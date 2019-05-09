@@ -8,45 +8,41 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.input.getInputField
 import com.afollestad.materialdialogs.input.input
+import com.example.todolist.api.ClientAPI
 import com.example.todolist.data.Task
 import com.example.todolist.data.TokenPreferences
 import com.facebook.AccessToken
 import com.facebook.AccessTokenTracker
+import com.facebook.Profile
 import com.facebook.login.LoginManager
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var adapter: TasksAdapter
 
-    private val tasks = mutableListOf<Task>(
-//        Task("Tarefa 1 ", false),
-//        Task("Tarefa 2 ", true),
-//        Task("Tarefa 3 ", false),
-//        Task("Tarefa 4 ", true),
-//        Task("Tarefa 5 ", false),
-//        Task("Tarefa 6 ", true),
-//        Task("Tarefa 7 ", false),
-//        Task("Tarefa 8 ", true)
-    )
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         adapter = TasksAdapter(this,
-            onCheckBoxClick = {position, isChecked ->
-                updateTask(position, isChecked)
+            onCheckBoxClick = { position, task ->
+                updateTask(position, task)
             },
-            onDeleteClick = {position ->
+            onDeleteClick = { position, task ->
                 MaterialDialog(this).show {
                     title(R.string.delete)
                     title(R.string.delete_message)
                     positiveButton {
-                        deleteTask(position)
+                        deleteTask(position, task.id)
                     }
-                    negativeButton {  }
+                    negativeButton { }
                 }
             })
 
@@ -56,8 +52,6 @@ class MainActivity : AppCompatActivity() {
         recyclerTasks.layoutManager = manager
 
         showHideEmptyTaskText()
-
-        adapter.updateTaskList(tasks)
 
         buttonLogout.setOnClickListener {
             showLogoutMessage()
@@ -71,36 +65,124 @@ class MainActivity : AppCompatActivity() {
                     val text = getInputField().text.toString()
                     addTask(text)
                 }
-                negativeButton {  }
+                negativeButton { }
             }
         }
 
-        val tokenListener = object : AccessTokenTracker() {
+        getTasks()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateTextUserName()
+    }
+
+    private fun updateTextUserName() {
+        val profile = Profile.getCurrentProfile()
+        textUserName.text = if (profile != null) "${profile.firstName} ${profile.lastName}" else ""
+    }
+
+    private fun getTasks() {
+        ClientAPI.getService(this)?.getTasks()?.enqueue(
+            object : Callback<MutableList<Task>> {
+
+                override fun onResponse(call: Call<MutableList<Task>>, response: Response<MutableList<Task>>) {
+                    if (response.isSuccessful) {
+                        response.body()?.let { taskList ->
+                            adapter.updateTaskList(taskList)
+                        }
+                    } else {
+                        showSnackBar(response.message())
+                    }
+                }
+
+                override fun onFailure(call: Call<MutableList<Task>>, t: Throwable) {
+                    t.message?.let { showSnackBar(it) }
+                }
+
+
+            })
+
+        object : AccessTokenTracker() {
             override fun onCurrentAccessTokenChanged(oldAccessToken: AccessToken?, newAccessToken: AccessToken?) {
                 if (newAccessToken == null) {
                     logOut()
                 }
             }
         }
-
     }
 
-    private fun updateTask(position: Int, checked: Boolean) {
-        adapter.updateTask(position, checked)
+    private fun updateTask(position: Int, task: Task) {
+        ClientAPI.getService(this)?.postUpdateTask(task.id, task)?.enqueue(
+            object : Callback<Task> {
+
+                override fun onResponse(call: Call<Task>, response: Response<Task>) {
+                    if (response.isSuccessful) {
+                        response.body()?.let { taskUpdated ->
+                            adapter.updateTask(position, taskUpdated)
+                        }
+                    } else {
+                        showSnackBar(response.message())
+                    }
+                }
+
+                override fun onFailure(call: Call<Task>, t: Throwable) {
+                    t.message?.let { showSnackBar(it) }
+                }
+            }
+        )
     }
 
-    private fun deleteTask(position: Int) {
-        adapter.deleteTask(position)
-        showHideEmptyTaskText()
+    private fun deleteTask(position: Int, taskId: String) {
+        ClientAPI.getService(this)?.postDeleteTask(taskId)?.enqueue(
+            object : Callback<ResponseBody> {
+
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                    if (response.isSuccessful) {
+                        adapter.deleteTask(position)
+                        showHideEmptyTaskText()
+                    } else {
+                        showSnackBar(response.message())
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    t.message?.let { showSnackBar(it) }
+                }
+
+
+            }
+        )
     }
 
-    private fun addTask(taskText: String){
-        adapter.addTask(taskText)
-        recyclerTasks.smoothScrollToPosition(tasks.size)
-        showHideEmptyTaskText()
+    private fun addTask(taskText: String) {
+        val task = Task(taskText)
+        ClientAPI.getService(this)?.postCreateTask(task)?.enqueue(
+            object : Callback<Task> {
+
+                override fun onResponse(call: Call<Task>, response: Response<Task>) {
+                    if (response.isSuccessful) {
+                        response.body()?.let { task ->
+                            adapter.addTask(task)
+                            recyclerTasks.smoothScrollToPosition(adapter.itemCount)
+                            showHideEmptyTaskText()
+                        }
+                    } else {
+                        showSnackBar(response.message())
+                    }
+                }
+
+                override fun onFailure(call: Call<Task>, t: Throwable) {
+                    t.message?.let { showSnackBar(it) }
+                }
+
+
+            }
+        )
     }
 
-    private fun showHideEmptyTaskText(){
+    private fun showHideEmptyTaskText() {
         textNoTasks.visibility = if (adapter.itemCount > 0) View.GONE else View.VISIBLE
     }
 
@@ -110,6 +192,11 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
+
+    private fun showSnackBar(message: String) {
+        Snackbar.make(rootMainLayout, message, Snackbar.LENGTH_LONG).show()
+    }
+
 
     private fun showLogoutMessage() {
         MaterialDialog(this).show {

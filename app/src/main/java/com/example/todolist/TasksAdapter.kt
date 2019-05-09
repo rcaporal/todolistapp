@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.data.Task
 
 class TasksAdapter(activity: Activity,
-                   val onCheckBoxClick: (position: Int, isChecked: Boolean)->Unit,
-                   val onDeleteClick: (position: Int)->Unit
+                   val onCheckBoxClick: (position: Int, task:Task)->Unit,
+                   val onDeleteClick: (position: Int, task:Task)->Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val taskList = mutableListOf<Task>()
@@ -38,18 +38,18 @@ class TasksAdapter(activity: Activity,
         showStrikeThrough(holder.taskText, task.completed)
 
         holder.checkBox.setOnClickListener {
-            onCheckBoxClick(position, !task.completed)
+            task.completed = !task.completed
+            onCheckBoxClick(position, task)
         }
 
         holder.deleteButton.setOnClickListener {
-            onDeleteClick(position)
+            onDeleteClick(position, task)
         }
 
     }
 
-    fun updateTask(position: Int, isChecked: Boolean){
-        val task = taskList[position]
-        task.completed = isChecked
+    fun updateTask(position: Int, taskUpdated: Task){
+        taskList[position] = taskUpdated
         notifyItemChanged(position)
     }
 
@@ -73,8 +73,7 @@ class TasksAdapter(activity: Activity,
         }
     }
 
-    fun addTask(taskText: String) {
-        val task = Task(taskText, false)
+    fun addTask(task: Task) {
         taskList.add(task)
         notifyItemInserted(taskList.size - 1)
     }

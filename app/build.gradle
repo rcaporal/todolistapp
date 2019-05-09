@@ -46,4 +46,14 @@ dependencies {
 
     //gson
     implementation 'com.google.code.gson:gson:2.8.5'
+
+    //retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+
+    // Converte resposta da api de json para objeto
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+
+    // Interceptor para visualizar os logs das requisições do Retrofit
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
 }
